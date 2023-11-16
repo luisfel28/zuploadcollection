@@ -1,0 +1,78 @@
+  METHOD save_pdf.
+
+    DATA: lv_file        TYPE string,
+          lv_ext         TYPE zde_extensao,
+          lv_version     TYPE zde_version VALUE 1,
+          ls_fat_int_up  TYPE zrefx_fat_int_up,
+          lv_inv_ref_num TYPE zde_num_ref.
+
+    DATA: lt_fat_int     TYPE TABLE OF zrefx_fat_int.
+
+    SPLIT iv_filename AT '.' INTO lv_file lv_ext.
+    lv_inv_ref_num = lv_file.
+    TRANSLATE lv_ext TO UPPER CASE.
+
+    GET TIME STAMP FIELD DATA(lv_timestamp).
+
+    APPEND VALUE #(
+      inv_ref_num = lv_inv_ref_num
+    ) TO lt_fat_int.
+
+    DATA(lo_validations) = NEW zcl_zre_fat_int_validations(
+      it_fat_int  = lt_fat_int
+      iv_guid     = gv_guid
+      iv_filename = iv_filename
+      iv_filetype = lv_ext ).
+
+    IF lo_validations->check_level( lv_inv_ref_num ) NE 'I'.
+        set_log(
+          iv_inv_ref_num  = lv_inv_ref_num
+          iv_filename     = iv_filename
+          iv_filetype     = lv_ext
+          iv_type         = 'E'
+          iv_msgcode      = '004' " Referência em nível superior e não poderá ser modificada
+        ).
+        EXIT.
+    ENDIF.
+
+    check_up( EXPORTING iv_inv_ref_num = lv_inv_ref_num CHANGING cs_fat_int_up = ls_fat_int_up ).
+
+    IF ls_fat_int_up IS NOT INITIAL.
+      lv_version = ls_fat_int_up-version + 1.
+    ENDIF.
+
+*** Atualiza antigo PDF
+    CLEAR ls_fat_int_up-active.
+    UPDATE zrefx_fat_int_up FROM @ls_fat_int_up.
+
+*** Insere novo PDF
+    INSERT zrefx_fat_int_up FROM @(
+        VALUE #(
+          inv_ref_num = lv_inv_ref_num
+          version     = lv_version
+          filename    = iv_filename
+          content     = is_media_resource-value
+          mimetype    = is_media_resource-mime_type
+          active      = abap_true
+          created_by  = sy-uname
+          created_at  = lv_timestamp
+          )
+        ).
+
+    IF sy-subrc EQ 0.
+
+      COMMIT WORK AND WAIT.
+
+      set_log(
+        iv_inv_ref_num  = lv_inv_ref_num
+        iv_filename     = iv_filename
+        iv_filetype     = lv_ext
+        iv_type         = 'S'
+        iv_msgcode      = '008' " Fatura PDF cadastrada com sucesso
+      ).
+
+    ELSE.
+      ROLLBACK WORK.
+    ENDIF.
+
+  ENDMETHOD.

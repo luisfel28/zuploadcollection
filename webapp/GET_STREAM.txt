@@ -1,0 +1,31 @@
+  METHOD /iwbep/if_mgw_appl_srv_runtime~get_stream.
+
+    DATA: ls_stream   TYPE ty_s_media_resource,
+          ls_lheader  TYPE ihttpnvp,
+          lv_filename TYPE string.
+
+    READ TABLE it_key_tab ASSIGNING FIELD-SYMBOL(<fs_key>) INDEX 1.
+
+    IF sy-subrc EQ 0.
+
+      SELECT SINGLE *
+         FROM zrefx_fat_int_up
+          INTO @DATA(ls_fat_int_up)
+        WHERE inv_ref_num EQ @<fs_key>-value
+          AND active EQ @abap_true.
+
+      IF ls_fat_int_up IS NOT INITIAL.
+
+        lv_filename = escape( val = lv_filename format = cl_abap_format=>e_url ).
+        ls_lheader-name   = 'Content-Disposition'.
+        ls_lheader-value  = 'outline; filename=' && ls_fat_int_up-filename && ';'.
+        set_header( is_header = ls_lheader ).
+
+        ls_stream-value     = ls_fat_int_up-content.
+        ls_stream-mime_type = ls_fat_int_up-mimetype.
+        copy_data_to_ref( EXPORTING is_data = ls_stream   CHANGING  cr_data = er_stream ).
+      ENDIF.
+
+    ENDIF.
+
+  ENDMETHOD.

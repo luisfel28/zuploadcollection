@@ -1,0 +1,20 @@
+  METHOD zent_templateset_get_entityset.
+
+    DATA: lt_desc_fields TYPE ddfields.
+
+    FIELD-SYMBOLS: <fs_value> TYPE any.
+
+    lt_desc_fields = rec_template( ).
+
+    et_entityset = CORRESPONDING #( lt_desc_fields ).
+
+    APPEND INITIAL LINE TO et_entityset ASSIGNING FIELD-SYMBOL(<fs_entityset>).
+
+    LOOP AT lt_desc_fields INTO DATA(ls_desc_fields).
+
+      ASSIGN COMPONENT ls_desc_fields-fieldname OF STRUCTURE <fs_entityset> TO <fs_value>.
+      <fs_value> = ls_desc_fields-fieldname.
+
+    ENDLOOP.
+
+  ENDMETHOD.

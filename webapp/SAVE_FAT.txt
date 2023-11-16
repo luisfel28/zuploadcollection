@@ -1,0 +1,132 @@
+  METHOD save_fat.
+
+    DATA: lv_file        TYPE string,
+          lv_ext         TYPE zde_extensao,
+          lv_inv_ref_num TYPE zde_num_ref,
+          lv_xstring     TYPE xstring,
+          lv_length      TYPE i,
+          lv_string      TYPE string,
+          li_bin_tab     TYPE STANDARD TABLE OF x255.
+
+    DATA : lo_excel_ref   TYPE REF TO cl_fdt_xl_spreadsheet.
+
+    DATA: lt_fat_int     TYPE TABLE OF zrefx_fat_int,
+          lt_desc_fields TYPE ddfields,
+          lt_log_err     LIKE gt_log.
+
+    FIELD-SYMBOLS: <gt_data>          TYPE STANDARD TABLE,
+                   <fs_value>         TYPE any,
+                   <fs_value_fat_int> TYPE any.
+
+    SPLIT iv_filename AT '.' INTO lv_file lv_ext.
+    lv_inv_ref_num = lv_file.
+    TRANSLATE lv_ext TO UPPER CASE.
+
+    GET TIME STAMP FIELD DATA(lv_timestamp).
+
+*** Recupera Dados do ficheiro XLSX
+    lv_xstring = is_media_resource-value.
+
+    TRY .
+        lo_excel_ref = NEW cl_fdt_xl_spreadsheet(
+                                document_name = lv_file
+                                xdocument     = lv_xstring ) .
+      CATCH cx_fdt_excel_core INTO DATA(oref).
+    ENDTRY .
+
+    lo_excel_ref->if_fdt_doc_spreadsheet~get_worksheet_names( IMPORTING worksheet_names = DATA(lt_worksheets) ).
+
+    IF NOT lt_worksheets IS INITIAL.
+      READ TABLE lt_worksheets INTO DATA(lv_woksheetname) INDEX 1.
+      DATA(lo_data_ref) = lo_excel_ref->if_fdt_doc_spreadsheet~get_itab_from_worksheet( lv_woksheetname ).
+      ASSIGN lo_data_ref->* TO <gt_data>.
+    ENDIF.
+
+*** Remove linha das Descrições
+    DELETE <gt_data> INDEX 1.
+
+*** Recupera campos do Template
+    lt_desc_fields = rec_template( ).
+
+    DATA(lv_tot_fields) = lines( lt_desc_fields ).
+
+    LOOP AT <gt_data> ASSIGNING FIELD-SYMBOL(<fs_data>).
+
+*** Valida linhas com as colunas dos campos SAP
+      IF sy-tabix EQ 1.
+
+        DO lv_tot_fields TIMES.
+
+          DATA(ls_desc_fields) = lt_desc_fields[ sy-index ].
+          ASSIGN COMPONENT sy-index OF STRUCTURE <fs_data> TO <fs_value>.
+
+          IF <fs_value> NE ls_desc_fields-fieldname.
+
+            set_log(
+              iv_inv_ref_num  = ''
+              iv_filename     = iv_filename
+              iv_filetype     = lv_ext
+              iv_type         = 'E'
+              iv_msgcode      = '003' " A estrutura do ficheiro não é compativel com o template de carga
+            ).
+
+            EXIT.
+
+          ENDIF.
+
+        ENDDO.
+
+        CONTINUE.
+
+      ENDIF.
+
+*** Separa dados do ficheiro
+      APPEND INITIAL LINE TO lt_fat_int ASSIGNING FIELD-SYMBOL(<fs_fat_int>).
+      DO lv_tot_fields TIMES.
+        ls_desc_fields = lt_desc_fields[ sy-index ].
+        ASSIGN COMPONENT sy-index OF STRUCTURE <fs_data> TO <fs_value>.
+        ASSIGN COMPONENT ls_desc_fields-fieldname OF STRUCTURE <fs_fat_int> TO <fs_value_fat_int>.
+        <fs_value_fat_int> = <fs_value>.
+      ENDDO.
+
+    ENDLOOP.
+
+    DATA(lo_validations) = NEW zcl_zre_fat_int_validations(
+      it_fat_int  = lt_fat_int
+      iv_guid     = gv_guid
+      iv_filename = iv_filename
+      iv_filetype = lv_ext ).
+
+    REFRESH gt_log.
+    lo_validations->all_validations( CHANGING ct_validations = gt_log ).
+    lt_fat_int = lo_validations->gt_fat_int.
+
+*** Remove referências com erros de validação
+    lt_log_err = VALUE #( FOR ls_log IN gt_log
+                                WHERE ( type = 'E' )
+                                ( ls_log ) ).
+
+
+    LOOP AT lt_log_err INTO DATA(ls_log_err).
+      DELETE lt_fat_int WHERE inv_ref_num = ls_log_err-inv_ref_num.
+    ENDLOOP.
+
+    IF lt_fat_int IS NOT INITIAL.
+
+*** Atualiza campos com dados padrões
+      MODIFY lt_fat_int
+      FROM VALUE #( validt_level = 'I' created_by = sy-uname created_at = lv_timestamp )
+      TRANSPORTING validt_level created_by created_at WHERE inv_ref_num NE ' '.
+
+*** Insere novos dados
+***    MODIFY zrefx_fat_int FROM TABLE lt_fat_int.
+
+      IF sy-subrc EQ 0.
+        COMMIT WORK AND WAIT.
+      ELSE.
+        ROLLBACK WORK.
+      ENDIF.
+
+    ENDIF.
+
+  ENDMETHOD.

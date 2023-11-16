@@ -1,0 +1,8 @@
+  METHOD rec_template.
+
+    DATA: lt_desc_struc  TYPE REF TO cl_abap_structdescr.
+
+    lt_desc_struc ?= cl_abap_structdescr=>describe_by_name( 'ZREFX_S_FAT_INT_TEMPLATE' ).
+    rt_fields = lt_desc_struc->get_ddic_field_list( ).
+
+  ENDMETHOD.

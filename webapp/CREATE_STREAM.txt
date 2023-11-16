@@ -1,0 +1,27 @@
+  METHOD /iwbep/if_mgw_appl_srv_runtime~create_stream.
+
+    DATA: lv_filename TYPE zde_filename.
+
+    SPLIT iv_slug AT '|' INTO gv_guid lv_filename.
+
+    set_proc(
+      iv_zreguid  = gv_guid
+      iv_filename = lv_filename
+    ).
+
+    CASE is_media_resource-mime_type.
+      WHEN c_pdf.
+        save_pdf( is_media_resource = is_media_resource iv_filename = lv_filename ).
+      WHEN c_xlsx.
+        save_fat( is_media_resource = is_media_resource iv_filename = lv_filename ).
+    ENDCASE.
+
+    save_log( ).
+
+    del_proc(
+      iv_zreguid  = gv_guid
+      iv_filename = lv_filename
+    ).
+
+
+  ENDMETHOD.
