@@ -1,0 +1,126 @@
+<mvc:View controllerName="com.fidelidademundial.zrefatintuploads.controller.uploads"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns:core="sap.ui.core"
+    xmlns:u="sap.ui.unified"
+    xmlns:l="sap.ui.layout"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}" navButtonPress="onNavButton" class="sapUiContentPadding sapUiResponsivePadding--content sapUiResponsivePadding--footer">
+        <content>
+            <l:VerticalLayout>
+                <l:HorizontalLayout id="PnlUpload"  visible="true">
+                    <l:VerticalLayout >
+                    <l:HorizontalLayout>
+                        <l:VerticalLayout >
+                        	<Panel id="containerLayout" headerText="Instruções:">
+                                <l:VerticalLayout >
+                                <Text text="1) Selecione os ficheiros que serão carregados" class="TxtInstrucoes" />
+                                <Text text="2) Somente ficheiros com as extensões .XSLX e .PDF serão aceitos" class="TxtInstrucoes" />
+                                <Text text="3) Pressione o botão CARREGAR FICHEIROS para finalizar a carga " class="TxtInstrucoes" />
+                                </l:VerticalLayout>   
+                                <l:VerticalLayout width="100px">
+                                </l:VerticalLayout>  
+                                <l:VerticalLayout >  
+                                    <Text text="Pressione o botão abaixo para obter o template para carga de dados." class="TxtInstrucoes" />
+                                    <Text text="Importante: A 2ª linha do ficheiro não deve ser alterada." class="bold" />
+                                    <Button
+                                        icon="sap-icon://create"
+                                        type="Attention"
+                                        text="Gerar template"
+                                        tooltip="Cria ficheiro com o template para carga"
+                                        press="handleFicheiroTemplate"/>
+                                </l:VerticalLayout>   
+                            </Panel>
+                        </l:VerticalLayout>   
+                    </l:HorizontalLayout>
+                    <l:HorizontalLayout>
+                        <l:VerticalLayout>
+                            <UploadCollection
+                            id="UploadCollection"
+                            uploadButtonInvisible="false"
+                            mimeType="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            sameFilenameAllowed="false"
+                            multiple="true"
+                            instantUpload="false"
+                            noDataDescription="Arraste os ficheiros para cá ou use o botão Adicionar"
+                            noDataText="Nenhum ficheiro carregado"
+                            showSeparators="All"
+                            change="onChange"
+                            fileDeleted="onFileDeleted"
+                            filenameLengthExceed="onFilenameLengthExceed"
+                            fileSizeExceed="onFileSizeExceed"
+                            typeMissmatch="onTypeMissmatch"
+                            beforeUploadStarts="onBeforeUploadStarts"
+                            uploadComplete="onUploadComplete"
+                             >
+                            <!-- <toolbar> <OverflowToolbar> <ToolbarSpacer /> <UploadCollectionToolbarPlaceholder /> </OverflowToolbar> </toolbar> -->
+                            </UploadCollection>                                
+                        </l:VerticalLayout>
+                    </l:HorizontalLayout>   
+                    </l:VerticalLayout>  
+                </l:HorizontalLayout>    
+                <l:HorizontalLayout id="PnlLog" visible="false">     
+                        <!--<Table alternateRowColors="true" id="UpTab" width="auto" items="{/ZENT_UPLOADLOGSet?$filter=Zreguid eq '6534f6b4-397a-401c-b216-0921c3da'}" >-->
+                        <Table alternateRowColors="true" id="UpTab" width="auto">
+							<headerToolbar>
+								<Toolbar id="tb1">
+									<Title id="lineItemsTitle" text="Log de Processamento" titleStyle="H3" level="H3"/>
+                                    <ToolbarSpacer/>
+                                        <Label text="Status:" />
+                                            <ComboBox id="CboStatus" change="onFiltrar">
+                                                <core:Item key="" text="" />
+                                                <core:Item key="S" text="Sucesso" />
+                                                <core:Item key="E" text="Erro" />
+                                            </ComboBox>
+                                    <ToolbarSpacer/>
+                                        <Label text="Tipo:" />
+                                            <ComboBox id="CboTipo" change="onFiltrar">
+                                                <core:Item key="" text="" />
+                                                <core:Item key="PDF" text="PDF" />
+                                                <core:Item key="XLSX" text="XLSX" />
+                                            </ComboBox>                                        
+                                     <ToolbarSpacer/> 
+						            <SearchField id="txtSearch" search="onFiltrar" placeholder="Procurar referência..." width="17.5rem"/>
+                                    <ToolbarSpacer />
+					                    <Button icon="sap-icon://excel-attachment" press="onExport"/>
+								</Toolbar> 
+							</headerToolbar>
+							<columns>
+								<Column width="5rem" hAlign="Center">
+									<Text text="Status"/>
+								</Column>
+								<Column width="8rem" mergeDuplicates="true">
+									<Text text="Referência" hAlign="Center" />
+								</Column>
+								<Column width="16rem">
+									<Text text="Ficheiro"/>
+								</Column>
+								<Column minScreenWidth="Tablet">
+									<Text text="Mensagem"/>
+								</Column>                                
+							</columns>
+						</Table>
+                </l:HorizontalLayout>               
+            </l:VerticalLayout>                            
+        </content>
+        <footer>
+            <OverflowToolbar >
+                <MessageStrip
+                    id="MsgStrip"
+                    visible="false"
+                    enableFormattedText="true"
+                    showIcon="true"
+                    showCloseButton="true"
+                >
+                </MessageStrip>            
+                <ToolbarSpacer/>
+                <Button
+                        id="BtnUp"
+                        text="Carregar Ficheiros"
+                        class="BotCarga"
+                        type="Emphasized" 
+                        tooltip="Iniciar carga dos ficheiros"
+                        press="onStartUpload"/> 
+            </OverflowToolbar>
+        </footer>          
+    </Page>
+</mvc:View>

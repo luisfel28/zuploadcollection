@@ -1,0 +1,199 @@
+<core:FragmentDefinition
+	xmlns:l="sap.ui.layout"
+	xmlns="sap.m"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:core="sap.ui.core">
+ 		<Dialog showHeader="true" resizable="true" id="openDialog">
+		<content>
+<!-- 			<l:VerticalLayout >
+                    <l:HorizontalLayout><Label text="DOC: {DetalhesRef>/Belnr}" /></l:HorizontalLayout>
+			</l:VerticalLayout > -->
+		 <f:Form id="FormRef"
+			editable="false">
+			<f:title>
+				<!-- <core:Title text="Detalhes" /> -->
+			</f:title>
+			<f:layout>
+				<f:ResponsiveGridLayout
+					labelSpanXL="3"
+					labelSpanL="3"
+					labelSpanM="3"
+					labelSpanS="12"
+					adjustLabelSpan="false"
+					emptySpanXL="4"
+					emptySpanL="4"
+					emptySpanM="4"
+					emptySpanS="0"
+					columnsXL="1"
+					columnsL="1"
+					columnsM="1"
+					singleContainerFullSize="false" />
+			</f:layout>
+			<f:formContainers>
+				<f:FormContainer>
+					<f:formElements>
+						<f:FormElement label="Validation Type">
+							<f:fields>
+								<Text text="{DetalhesRef>/TpValid}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Validation Level">
+							<f:fields>
+								<Text text="{DetalhesRef>/ValidtLevel}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Document Number">
+							<f:fields>
+								<Text text="{DetalhesRef>/Belnr}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Invoice / Credit">
+							<f:fields>
+								<Text text="{DetalhesRef>/TpDoc}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Invoice Number">
+							<f:fields>
+								<Text text="{DetalhesRef>/BelnrNc}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Invoice Date">
+							<f:fields>
+								<Text text="{ path: 'DetalhesRef>/Bldat', type: 'sap.ui.model.type.Date', formatOptions: { source: { pattern: 'yyyy-MM-ddTHH:mm:ss' }, pattern: 'dd/MM/yyyy' } }" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Service Provider Name">
+							<f:fields>
+								<Text text="{DetalhesRef>/NameSp}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="VAT Number">
+							<f:fields>
+								<Text text="{DetalhesRef>/Vat}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Código do fornecedor">
+							<f:fields>
+								<Text text="{DetalhesRef>/Lifnr}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Nome do Fornecedor">
+							<f:fields>
+								<Text text="{DetalhesRef>/NameLifnr}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Invoice Description">
+							<f:fields>
+								<Text text="{DetalhesRef>/InvDesc}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Invoice Period From">
+							<f:fields>
+								<Text text="{ path: 'DetalhesRef>/InvDatFrom', type: 'sap.ui.model.type.Date', formatOptions: { source: { pattern: 'yyyy-MM-ddTHH:mm:ss' }, pattern: 'dd/MM/yyyy' } }" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Invoice Period To">
+							<f:fields>
+								<Text text="{ path: 'DetalhesRef>/InvDatTo', type: 'sap.ui.model.type.Date', formatOptions: { source: { pattern: 'yyyy-MM-ddTHH:mm:ss' }, pattern: 'dd/MM/yyyy' } }" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Date Invoice Received">
+							<f:fields>
+								<Text text="{ path: 'DetalhesRef>/InvDatRec', type: 'sap.ui.model.type.Date', formatOptions: { source: { pattern: 'yyyy-MM-ddTHH:mm:ss' }, pattern: 'dd/MM/yyyy' } }" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Date Invoice Sent Fid">
+							<f:fields>
+								<Text text="{ path: 'DetalhesRef>/InvDatSendFid', type: 'sap.ui.model.type.Date', formatOptions: { source: { pattern: 'yyyy-MM-ddTHH:mm:ss' }, pattern: 'dd/MM/yyyy' } }" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="SPV">
+							<f:fields>
+								<Text text="{DetalhesRef>/Spv}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="VAT Number of SPV">
+							<f:fields>
+								<Text text="{DetalhesRef>/VatSpv}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Empresa SAP">
+							<f:fields>
+								<Text text="{DetalhesRef>/BukrsSpv}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Nome Empresa SAP">
+							<f:fields>
+								<Text text="{DetalhesRef>/ButxtSpv}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="IBAN">
+							<f:fields>
+								<Text text="{DetalhesRef>/Iban}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="SWIFT/BIC">
+							<f:fields>
+								<Text text="{DetalhesRef>/Swift}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Sort Code">
+							<f:fields>
+								<Text text="{DetalhesRef>/SortCode}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Invoice Currency">
+							<f:fields>
+								<Text text="{DetalhesRef>/Currency}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="NET Invoice Value">
+							<f:fields>
+								<Text text="{ parts: [ { path: 'DetalhesRef>/Netvalue' }, { path: 'DetalhesRef>/Currency' }] , type: 'sap.ui.model.type.Currency', formatOptions: { showMeasure: true, currencyCode: false } }" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="VAT Invoice Value">
+							<f:fields>
+								<Text text="{ parts: [ { path: 'DetalhesRef>/Vatvalue' }, { path: 'DetalhesRef>/Currency' }] , type: 'sap.ui.model.type.Currency', formatOptions: { showMeasure: true, currencyCode: false } }" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="GROSS Invoice Value">
+							<f:fields>
+								<Text text="{ parts: [ { path: 'DetalhesRef>/Grossvalue' }, { path: 'DetalhesRef>/Currency' }] , type: 'sap.ui.model.type.Currency', formatOptions: { showMeasure: true, currencyCode: false } }" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Capitalised / Expensed">
+							<f:fields>
+								<Text text="{DetalhesRef>/TpCapexp}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Contract Code">
+							<f:fields>
+								<Text text="{DetalhesRef>/ContractCode}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Within Business Plan?">
+							<f:fields>
+								<Text text="{DetalhesRef>/BusinessPlan}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="AM Recommendation for Payment">
+							<f:fields>
+								<Text text="{DetalhesRef>/AmRecommPaym}" />
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="Asset Manager Comment">
+							<f:fields>
+								<Text text="{DetalhesRef>/AssetManagerComment}" />
+							</f:fields>
+						</f:FormElement>																																																																																																																																																																								
+					</f:formElements>
+				</f:FormContainer>
+			</f:formContainers>
+		</f:Form>
+		</content>
+		<beginButton>
+			<Button text="Ok" press=".closeDialog"/>
+		</beginButton>
+		</Dialog>		
+</core:FragmentDefinition>
